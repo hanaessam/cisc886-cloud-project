@@ -34,3 +34,26 @@ output "ssh_command" {
   description = "SSH command to connect to EC2"
   value       = "ssh -i ~/.ssh/${var.ec2_key_name}.pem ec2-user@${module.ec2.ec2_public_ip}"
 }
+
+
+# ──  S3 ──────────────────────────────────────────────────────────────
+output "s3_bucket_name" {
+  description = "S3 bucket name"
+  value       = module.s3.bucket_name
+}
+
+output "s3_bucket_arn" {
+  description = "S3 bucket ARN"
+  value       = module.s3.bucket_arn
+}
+
+# ── EMR ─────────────────────────────────────────────────────────────
+output "emr_cluster_id" {
+  description = "EMR cluster ID — used to monitor and terminate"
+  value       = module.emr.cluster_id
+}
+
+output "emr_master_dns" {
+  description = "EMR master DNS — for Spark UI"
+  value       = module.emr.master_dns
+}
