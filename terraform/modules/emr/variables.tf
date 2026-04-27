@@ -1,0 +1,9 @@
+variable "prefix" { type = string }
+variable "aws_region" { type = string }
+variable "vpc_id" { type = string }
+variable "vpc_cidr" { type = string }
+variable "private_subnet_id" { type = string }
+variable "s3_bucket_name" { type = string }
+variable "emr_master_instance_type" { type = string }
+variable "emr_core_instance_type" { type = string }
+variable "emr_core_instance_count" { type = number }

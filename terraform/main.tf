@@ -19,3 +19,28 @@ module "ec2" {
   key_name         = var.ec2_key_name
   my_ip            = var.my_ip
 }
+
+
+# ──S3 Module ───────────────────────────────────────────────────────
+module "s3" {
+  source = "./modules/s3"
+
+  prefix         = var.prefix
+  aws_region     = var.aws_region
+  s3_bucket_name = var.s3_bucket_name
+}
+
+# ──EMR Module ──────────────────────────────────────────────────────
+module "emr" {
+  source = "./modules/emr"
+
+  prefix                   = var.prefix
+  aws_region               = var.aws_region
+  vpc_id                   = var.vpc_id
+  vpc_cidr                 = var.vpc_cidr
+  private_subnet_id        = var.private_subnet_id
+  s3_bucket_name           = module.s3.bucket_name
+  emr_master_instance_type = var.emr_master_instance_type
+  emr_core_instance_type   = var.emr_core_instance_type
+  emr_core_instance_count  = var.emr_core_instance_count
+}
