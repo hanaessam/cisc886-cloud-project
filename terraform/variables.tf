@@ -52,3 +52,44 @@ variable "my_ip" {
   description = "Your public IP for SSH access — format: x.x.x.x/32"
   type        = string
 }
+
+# ── Networking inputs  ─────────────────────────────────
+variable "vpc_id" {
+  description = "VPC ID — output from Person 1 terraform apply"
+  type        = string
+}
+
+variable "private_subnet_id" {
+  description = "Private subnet ID — output from Person 1 terraform apply"
+  type        = string
+}
+
+variable "private_route_table_id" {
+  description = "Private route table ID — output from Person 1 terraform apply"
+  type        = string
+}
+
+# ──  S3 ──────────────────────────────────────────────────────────────
+variable "s3_bucket_name" {
+  description = "Globally unique S3 bucket name"
+  type        = string
+}
+
+# ──EMR ─────────────────────────────────────────────────────────────
+variable "emr_master_instance_type" {
+  description = "EMR master node instance type"
+  type        = string
+  default     = "m5.xlarge"
+}
+
+variable "emr_core_instance_type" {
+  description = "EMR core node instance type"
+  type        = string
+  default     = "m5.xlarge"
+}
+
+variable "emr_core_instance_count" {
+  description = "Number of EMR core nodes"
+  type        = number
+  default     = 2
+}

@@ -44,3 +44,5 @@ terraform.rc
 .terraform/
 .terraform.lock.hcl
 terraform.tfvars
+config.bat
+node_modules
