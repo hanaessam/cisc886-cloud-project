@@ -62,19 +62,24 @@ resource "aws_iam_instance_profile" "ec2" {
   role = aws_iam_role.ec2.name
 }
 
-# ── 3. Latest Amazon Linux 2 AMI ──────────────────────────────────────────────
+# ── 3. Amazon Linux 2023 AMI ──────────────────────────────────────────────────
 data "aws_ami" "amazon_linux_2" {
   most_recent = true
   owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    values = ["al2023-ami-*-x86_64"]
   }
 
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
   }
 }
 
@@ -94,8 +99,8 @@ resource "aws_instance" "main" {
 
   user_data = <<-EOF
     #!/bin/bash
-    yum update -y
-    yum install -y docker git curl
+    dnf update -y
+    dnf install -y docker git curl zstd
     systemctl start docker
     systemctl enable docker
     usermod -aG docker ec2-user
