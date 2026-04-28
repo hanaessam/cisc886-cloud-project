@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GlowBot</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="mini-logo">
+          <span>💄</span>
+          <strong>GlowBot</strong>
+        </div>
+        <button class="sidebar-icon-btn" id="collapseBtn" aria-label="Close sidebar">‹</button>
+      </div>
+
+      <button class="new-chat-btn" id="newChatBtn" aria-label="New chat">
+        <span>＋</span>
+        <span>New chat</span>
+      </button>
+
+      <nav class="sidebar-nav">
+        <button aria-label="Search chats">⌕ <span>Search chats</span></button>
+        <button aria-label="Beauty library">✦ <span>Beauty Library</span></button>
+        <button aria-label="Skincare guide">🌸 <span>Skincare Guide</span></button>
+        <button aria-label="Customize GlowBot">⚙ <span>Customize GlowBot</span></button>
+      </nav>
+
+      <div class="chat-history">
+        <p class="sidebar-label">Chats</p>
+        <div id="chatList" class="chat-list empty">
+          <p class="empty-chat">No chats yet. Start a new beauty chat ✨</p>
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="model-card">
+          <span class="model-dot"></span>
+          <div>
+            <strong id="modelSideName">your-model-name</strong>
+            <small>Fine-tuned model online</small>
+          </div>
+        </div>
+
+        <div class="user-card">
+          <div class="user-avatar">GB</div>
+          <span>GlowBot User</span>
+        </div>
+      </div>
+    </aside>
+
+    <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle sidebar">‹</button>
+
+    <section class="main-panel">
+      <div class="beauty-bg" id="beautyBg"></div>
+
+      <header class="topbar">
+        <div>
+          <h1>GlowBot <span>⌄</span></h1>
+          <p><span class="green-dot"></span><span id="modelTopName">your-model-name</span></p>
+        </div>
+
+        <div class="top-actions">
+          <button aria-label="Share">⇧</button>
+          <div class="top-avatar">GB</div>
+        </div>
+      </header>
+
+      <main class="chat-area" id="chatArea">
+        <section class="welcome" id="welcomeScreen">
+          <div class="beauty-bag-logo">
+            <div class="bag-handle"></div>
+            <div class="bag-body">
+              <div class="bag-icons">💄 ✨ 🌸</div>
+              <h2>GlowBot</h2>
+              <p>Your Beauty AI Assistant</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="input-section">
+        <form class="input-bar" id="chatForm">
+          <button type="button" class="attach-btn" aria-label="Beauty sparkle">✦</button>
+          <textarea
+            id="userInput"
+            rows="1"
+            placeholder="Message GlowBot..."
+            aria-label="Message GlowBot"
+          ></textarea>
+          <button type="submit" class="send-btn" aria-label="Send message">↑</button>
+        </form>
+        <p class="disclaimer">GlowBot can make mistakes. Consider checking important information.</p>
+      </footer>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
