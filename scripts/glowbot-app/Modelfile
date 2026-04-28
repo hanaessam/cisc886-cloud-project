@@ -1,0 +1,77 @@
+# =============================================================================
+# Modelfile — cisc886-chatbot
+# CISC 886 — Cloud Computing Project · Queen's University
+# Team: Hana Essam (25tvtm), Mariam Mousa (25qns4), Alaa Mahmoud (25lskh)
+#
+# PURPOSE:
+#   Ollama configuration file that wraps the fine-tuned GGUF model with the
+#   correct Llama 3 chat template, system prompt, and generation parameters.
+#
+# USAGE:
+#   ollama create cisc886-chatbot -f Modelfile
+#   ollama run cisc886-chatbot
+#   ollama list   # verify: cisc886-chatbot:latest  ~2.0 GB
+#
+# BASE MODEL:
+#   Llama-3.2-3B-Instruct fine-tuned with QLoRA on 50,000 samples from the
+#   Amazon Reviews 2023 — Beauty and Personal Care dataset (23.9M total reviews).
+#   Exported as GGUF Q4_K_M quantization (4-bit, 2.02 GB).
+#   Stored at: s3://25tvtm-cisc886-bucket-cloud-project/model/cisc886-beauty-model.gguf
+# =============================================================================
+
+# Path to the fine-tuned GGUF model file on the EC2 instance.
+# Downloaded from S3 using: aws s3 cp s3://25tvtm-cisc886-bucket-cloud-project/model/cisc886-beauty-model.gguf ~/
+FROM /home/ec2-user/cisc886-beauty-model.gguf
+
+# -----------------------------------------------------------------------------
+# TEMPLATE — Llama 3 chat format
+# -----------------------------------------------------------------------------
+# This template MUST match the format used during QLoRA fine-tuning.
+# The training data used this exact structure (see notebooks/fine_tuning/02_fine_tune_llama.ipynb):
+#   <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+#   {system_prompt}<|eot_id|>
+#   <|start_header_id|>user<|end_header_id|>
+#   {user_message}<|eot_id|>
+#   <|start_header_id|>assistant<|end_header_id|>
+#
+# Ollama substitutes {{ .System }} and {{ .Prompt }} at inference time.
+# Using a different template would produce degraded or incoherent responses.
+TEMPLATE """<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+{{ .System }}<|eot_id|>
+<|start_header_id|>user<|end_header_id|>
+{{ .Prompt }}<|eot_id|>
+<|start_header_id|>assistant<|end_header_id|>
+"""
+
+# -----------------------------------------------------------------------------
+# SYSTEM PROMPT — GlowBot identity and domain
+# -----------------------------------------------------------------------------
+# Defines the model's role, domain expertise, and behavioral expectations.
+# Consistent with the system prompt used in the GlowBot Streamlit app (app.py).
+SYSTEM """You are GlowBot, a knowledgeable beauty and personal care assistant
+trained on Amazon customer reviews. Help users find the right products,
+understand ingredients, compare options, and make informed purchasing
+decisions based on real customer experiences."""
+
+# -----------------------------------------------------------------------------
+# GENERATION PARAMETERS
+# -----------------------------------------------------------------------------
+
+# temperature — controls response creativity/randomness
+#   0.0 = deterministic, 1.0 = very creative
+#   0.7 chosen to balance informative and engaging responses
+PARAMETER temperature 0.7
+
+# num_ctx — context window size in tokens
+#   2048 provides enough context for multi-turn beauty product conversations
+#   without exceeding the model's 512-token training seq length per turn
+PARAMETER num_ctx 2048
+
+# num_predict — maximum tokens generated per response
+#   300 tokens (~200-250 words) is sufficient for detailed beauty recommendations
+#   Prevents runaway generation on CPU-only inference (t3.large has no GPU)
+PARAMETER num_predict 300
+
+# repeat_penalty — penalizes repeated phrases in output
+#   1.1 reduces repetition while keeping responses natural
+PARAMETER repeat_penalty 1.1
