@@ -17,7 +17,22 @@ st.set_page_config(
 
 MODEL_NAME  = "cisc886-chatbot:latest"
 OLLAMA_URL  = "http://127.0.0.1:11434/api/generate"
-NUM_PREDICT = 200
+NUM_PREDICT = 300
+
+SYSTEM_PROMPT = (
+    "You are a knowledgeable beauty and personal care assistant. "
+    "You help users find the right products, understand ingredients, compare options, "
+    "and make informed purchasing decisions based on real customer experiences from Amazon reviews."
+)
+
+def build_prompt(user_message: str) -> str:
+    return (
+        "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n"
+        + SYSTEM_PROMPT + "<|eot_id|>\n"
+        "<|start_header_id|>user<|end_header_id|>\n"
+        + user_message + "<|eot_id|>\n"
+        "<|start_header_id|>assistant<|end_header_id|>"
+    )
 
 st.markdown("""
 <style>
@@ -392,11 +407,17 @@ for msg in st.session_state.messages:
 
 # ── Streaming Ollama ───────────────────────────────────────────────────────────
 def stream_ollama(prompt: str):
+    full_prompt = build_prompt(prompt)
     body = json.dumps({
         "model": MODEL_NAME,
-        "prompt": prompt,
+        "prompt": full_prompt,
         "stream": True,
-        "options": {"num_predict": NUM_PREDICT, "temperature": 0.7, "repeat_penalty": 1.1}
+        "options": {
+            "num_predict": NUM_PREDICT,
+            "temperature": 0.7,
+            "repeat_penalty": 1.1,
+            "stop": ["<|eot_id|>", "<|end_of_text|>"]
+        }
     }).encode()
     req = urllib.request.Request(
         OLLAMA_URL, data=body,
