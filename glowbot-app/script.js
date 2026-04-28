@@ -239,6 +239,7 @@ const sendMessage = async () => {
       body: JSON.stringify({
         model: MODEL_NAME,
         prompt: buildPrompt(),
+        num_predict: 200,   
         stream: false
       })
     });
