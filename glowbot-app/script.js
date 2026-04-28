@@ -1,5 +1,5 @@
 const MODEL_NAME = "cisc886-chatbot:latest";
-const API_URL = `${window.location.protocol}//${window.location.hostname}:11434/api/generate`;
+const API_URL = "/api/generate";
 
 const SYSTEM_PROMPT = `You are GlowBot, a warm and expert beauty advisor.
 Specialize in skincare, makeup, haircare, fragrance, and wellness.
