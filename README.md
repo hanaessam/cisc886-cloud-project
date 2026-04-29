@@ -55,7 +55,7 @@ Raw Reviews → S3 → EMR Spark job → Parquet → Google Colab T4 (QLoRA fine
      Then this image tag will render automatically on GitHub.
      ============================================================ -->
 
-![GlowBot System Architecture](docs/architecture/architecture_diagram.png)
+![GlowBot System Architecture](docs/architecture/architecture_diagram.svg)
 
 > ⚠️ If the diagram above does not render, export from Lucidchart/draw.io and save to `docs/architecture/architecture_diagram.png`
 
