@@ -57,7 +57,6 @@ Raw Reviews → S3 → EMR Spark job → Parquet → Google Colab T4 (QLoRA fine
 
 ![GlowBot System Architecture](docs/architecture/architecture_diagram.svg)
 
-> ⚠️ If the diagram above does not render, export from Lucidchart/draw.io and save to `docs/architecture/architecture_diagram.png`
 
 ### Infrastructure at a Glance
 
@@ -103,7 +102,7 @@ cisc886-cloud-project/
 │       ├── 02_fine_tune_llama.ipynb       # QLoRA fine-tuning — runnable on Colab T4
 │       ├── 03_test_model.ipynb            # Model test + base vs fine-tuned comparison
 │       └── eda/
-│           └── 01_data_exploration.ipynb  # EDA — generates 4 figures saved to S3
+│           └── 01_data_exploration.ipynb  # EDA — generated 4 figures saved to S3
 │
 ├── glowbot-app/
 │   ├── app.py                             # GlowBot Streamlit chat interface (pink theme)
@@ -111,7 +110,7 @@ cisc886-cloud-project/
 │
 ├── docs/
 │   └── architecture/
-│       └── architecture_diagram.png       # ← INSERT ARCHITECTURE DIAGRAM HERE
+│       └── architecture_diagram.svg       # Architecture Diagram
 │
 └── README.md
 ```
@@ -170,7 +169,6 @@ Edit `terraform.tfvars`:
 prefix              = "cisc886"
 aws_region          = "us-east-1"
 ec2_key_name        = "cloud-project-key-pair"
-my_ip               = "YOUR_PUBLIC_IP/32"        # find with: curl ifconfig.me
 ec2_instance_type   = "t3.large"
 s3_bucket_name      = "25tvtm-cisc886-bucket-cloud-project"
 vpc_cidr            = "10.0.0.0/16"
@@ -269,32 +267,42 @@ aws emr describe-cluster --cluster-id j-3T5G2DNG3L81V \
 2. **Runtime → Change runtime type → T4 GPU**
 3. Run all cells in order (~40 minutes)
 
-**Key hyperparameters:**
-
 | Parameter | Value |
 |-----------|-------|
 | Base model | `unsloth/Llama-3.2-3B-Instruct-bnb-4bit` |
-| Technique | QLoRA — r=16, alpha=16, dropout=0 |
-| Target modules | q, k, v, o, gate, up, down projections |
-| Trainable params | 24,313,856 (0.75% of 3.2B) |
+| Technique | QLoRA / PEFT adapter fine-tuning |
+| LoRA config | `r=16`, `alpha=16`, `dropout=0` |
+| Target modules | `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj` |
 | Train samples | 50,000 |
-| Max steps | 200 |
+| Validation samples | 5,000 |
+| Max sequence length | 512 |
+| Max steps | 1,000 |
+| Steps per full epoch | 6,250 |
+| Effective epochs trained | 0.16 |
+| Per-device batch size | 2 |
+| Gradient accumulation | 4 |
+| Effective batch size | 8 |
 | Learning rate | 2e-4 |
-| Batch size | 2 (effective: 8 with grad accum=4) |
+| Warmup steps | 50 |
+| Optimizer | `adamw_8bit` |
 | Precision | fp16 |
+| Trainable parameters | 24,313,856 |
 
-**Training results:**
+#### Training results
 
-| Step | Train Loss | Val Loss |
-|------|-----------|----------|
-| 50   | 1.8809    | 1.8372   |
-| 100  | 1.7820    | 1.7268   |
-| 150  | 1.6370    | 1.5845   |
-| 200  | 1.6359    | 1.5801   |
+| Step | Train Loss | Validation Loss |
+|------|------------|-----------------|
+| 250  | 1.5504     | 1.474690 |
+| 500  | 1.6243     | 1.469938 |
+| 750  | 1.5640     | 1.465170 |
+| 1000 | 1.5544     | 1.464434 |
 
-The final notebook cell exports to GGUF and uploads automatically to S3:
-```
-s3://25tvtm-cisc886-bucket-cloud-project/model/cisc886-beauty-model.gguf  (2.02 GB)
+The run completed 1,000 optimization steps in approximately 3,213 seconds. With 50,000 training examples and an effective batch size of 8, one full epoch would require 6,250 steps, so the completed training corresponds to approximately 0.16 effective epochs.
+
+The notebook exports the fine-tuned model to GGUF and uploads it to S3:
+
+```text
+s3://25tvtm-cisc886-bucket-cloud-project/model/cisc886-beauty-model.gguf
 ```
 
 ---

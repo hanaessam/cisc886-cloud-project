@@ -65,19 +65,17 @@ echo "[4/4] Registering GlowBot as systemd service..."
 sudo tee /etc/systemd/system/glowbot.service > /dev/null << SVCEOF
 [Unit]
 Description=GlowBot Streamlit Beauty Assistant — cisc886 project
-After=network.target ollama.service
+After=network-online.target ollama.service
+Wants=network-online.target
 
 [Service]
 Type=simple
 User=ec2-user
 WorkingDirectory=$APP_DIR
-ExecStart=$HOME/.local/bin/streamlit run app.py \\
-    --server.port 3000 \\
-    --server.address 0.0.0.0 \\
-    --server.headless true \\
-    --browser.gatherUsageStats false
+ExecStart=$STREAMLIT_BIN run app.py --server.port 3000 --server.address 0.0.0.0 --server.headless true --browser.gatherUsageStats false
 Restart=always
-RestartSec=3
+RestartSec=5
+Environment="OLLAMA_HOST=http://127.0.0.1:11434"
 Environment="HOME=$HOME"
 
 [Install]
