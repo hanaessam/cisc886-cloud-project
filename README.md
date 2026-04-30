@@ -17,6 +17,7 @@
 
 - [Overview](#overview)
 - [System Architecture](#system-architecture)
+- [GlowBot Web Interface](#glowbot-web-interface)
 - [Repository Structure](#repository-structure)
 - [Prerequisites](#prerequisites)
 - [Deployment Guide](#deployment-guide)
@@ -56,6 +57,11 @@ Raw Reviews → S3 → EMR Spark job → Parquet → Google Colab T4 (QLoRA fine
      ============================================================ -->
 
 ![GlowBot System Architecture](docs/architecture/architecture_diagram.svg)
+
+
+### GlowBot Web Interface
+
+![GlowBot Web Interface](docs/screenshots/glowbot-running.png)
 
 
 ### Infrastructure at a Glance
