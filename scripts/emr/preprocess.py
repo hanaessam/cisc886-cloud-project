@@ -19,6 +19,9 @@ def main(input_path, output_path):
     print(f"[INFO] Raw rows: {df_raw.count():,}")
 
     # ── Select columns ────────────────────────────────────────────────────────
+    # Select only the 2023-format column names.
+    # The 2023 dataset uses 'text' instead of 'reviewText' and 'rating'
+    # instead of 'overall'. Selecting only needed columns reduces shuffle cost.
     df = df_raw.select(
         col("asin").alias("product_id"),
         col("rating").alias("rating"),
@@ -32,9 +35,9 @@ def main(input_path, output_path):
         col("review_text").isNotNull()
         & col("review_summary").isNotNull()
         & col("rating").isNotNull()
-        & (length(col("review_text")) >= 50)
-        & (length(col("review_summary")) >= 5)
-        & col("rating").between(1.0, 5.0)
+        & (length(col("review_text")) >= 50) # len(text) >= 50 removes stub reviews that would produce meaningless prompts.
+        & (length(col("review_summary")) >= 5) # len(summary) >= 5 ensures a minimum summary length.
+        & col("rating").between(1.0, 5.0) # rating range validation removes corrupted rows.
     )
     print(f"[INFO] After cleaning: {df_clean.count():,}")
 
